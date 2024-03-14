@@ -60,36 +60,7 @@ class DetailsViewController: UIViewController {
 	}
 	
 	@objc func menuButtonTapped() {
-		let alertController = UIAlertController()
-		
-		let takePhotoAction = UIAlertAction(title: "Take Photo", style: .default) { (action) in
-			self.takePhoto()
-		}
-		alertController.addAction(takePhotoAction)
-		
-		let openGalleryAction = UIAlertAction(title: "Open Gallery", style: .default) { (action) in
-			self.openGallery()
-		}
-		alertController.addAction(openGalleryAction)
-		
-		let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-		alertController.addAction(cancelAction)
-		
-		present(alertController, animated: true, completion: nil)
-	}
-	
-	func takePhoto() {
-		let imagePicker = UIImagePickerController()
-		imagePicker.delegate = self
-		imagePicker.sourceType = .camera
-		present(imagePicker, animated: true, completion: nil)
-	}
-		
-	func openGallery() {
-		let imagePicker = UIImagePickerController()
-		imagePicker.delegate = self
-		imagePicker.sourceType = .photoLibrary
-		present(imagePicker, animated: true, completion: nil)
+		ImagePickerHelper.showMenu(from: self)
 	}
 }
 
