@@ -74,7 +74,7 @@ class BirthdayViewController: UIViewController {
 		let years = components.year ?? 0
 		let month = components.month ?? 0
 		
-		yearsOld.text = years == 0 ? "MONTH OLD!" : "YEARS OLD!"
+		yearsOld.text = years == 0 ? (month == 1 ? "MONTH OLD!" : "MONTHS OLD!") : "YEARS OLD!"
 		
 		setMonthImg(month)
 		
@@ -97,12 +97,19 @@ class BirthdayViewController: UIViewController {
 	}
 	
 	func initCameraIcon() {
-		cameraImg.frame = babyImg.frame
-
-		let xPosition = babyImg.frame.origin.x + babyImg.frame.width
-		let yPosition = babyImg.frame.origin.y
-		cameraImg.frame = CGRect(x: xPosition, y: yPosition, width: 36, height: 36)
-
+		cameraImg.translatesAutoresizingMaskIntoConstraints = false
+		cameraImg.frame.size = CGSize(width: 36, height: 36)
+		
+		let angleInRadians = CGFloat.pi / 4
+		let distanceFromCenter = babyImg.frame.width / 2
+		let xPosition = distanceFromCenter * cos(angleInRadians)
+		let yPosition = distanceFromCenter * sin(angleInRadians)
+		
+		NSLayoutConstraint.activate([
+			cameraImg.centerXAnchor.constraint(equalTo: babyImg.centerXAnchor, constant: xPosition),
+			cameraImg.centerYAnchor.constraint(equalTo: babyImg.centerYAnchor, constant: -yPosition)
+		])
+		
 		let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onCameraIconClick))
 		cameraImg.isUserInteractionEnabled = true
 		cameraImg.addGestureRecognizer(tapGesture)
@@ -111,7 +118,7 @@ class BirthdayViewController: UIViewController {
 	func initShareBtn() {
 		shareBtn.backgroundColor = UIColor(red: 0.93, green: 0.48, blue: 0.48, alpha: 1)
 		shareBtn.layer.cornerRadius = shareBtn.frame.size.height / 2
-		shareBtn.setTitle("Share the news", for: .normal)
+		shareBtn.setTitle("Share the news ", for: .normal)
 		shareBtn.setImage(UIImage(named: "share"), for: .normal)
 		shareBtn.setTitleColor(.white, for: .normal)
 		shareBtn.semanticContentAttribute = .forceRightToLeft
