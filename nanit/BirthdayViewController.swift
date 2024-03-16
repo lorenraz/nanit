@@ -14,6 +14,7 @@ class BirthdayViewController: UIViewController {
 	@IBOutlet weak var ageImg: UIImageView!
 	@IBOutlet weak var babyImg: UIImageView!
 	@IBOutlet weak var cameraImg: UIImageView!
+	@IBOutlet weak var shareBtn: UIButton!
 	
 	let backImg = UIImageView()
 	let defaults = UserDefaults.standard
@@ -22,9 +23,10 @@ class BirthdayViewController: UIViewController {
         super.viewDidLoad()
 		
 		initRandomBG()
-		initialize()
+		initElements()
 		initBackBtn()
 		initCameraIcon()
+		initShareBtn()
     }
 	
 	func initRandomBG() {
@@ -59,7 +61,7 @@ class BirthdayViewController: UIViewController {
 		}
 	}
 	
-	func initialize() {
+	func initElements() {
 		let savedName = defaults.string(forKey: "name")!
 		let savedDate = UserDefaults.standard.object(forKey: "birthday") as? Date
 		let currentDate = Date()
@@ -89,7 +91,7 @@ class BirthdayViewController: UIViewController {
 	
 	func initBackBtn() {
 		let backButtonImage = UIImage(named: "back")
-		let backButton = UIBarButtonItem(image: backButtonImage, style: .plain, target: self, action: #selector(backButtonTapped))
+		let backButton = UIBarButtonItem(image: backButtonImage, style: .plain, target: self, action: #selector(onBackBtnClick))
 		navigationController?.navigationBar.tintColor = UIColor.black
 		navigationItem.leftBarButtonItem = backButton
 	}
@@ -106,12 +108,41 @@ class BirthdayViewController: UIViewController {
 		cameraImg.addGestureRecognizer(tapGesture)
 	}
 	
-	@objc func backButtonTapped() {
+	func initShareBtn() {
+		shareBtn.backgroundColor = UIColor(red: 0.93, green: 0.48, blue: 0.48, alpha: 1)
+		shareBtn.layer.cornerRadius = shareBtn.frame.size.height / 2
+		shareBtn.setTitle("Share the news", for: .normal)
+		shareBtn.setImage(UIImage(named: "share"), for: .normal)
+		shareBtn.setTitleColor(.white, for: .normal)
+		shareBtn.semanticContentAttribute = .forceRightToLeft
+		shareBtn.setTitleColor(shareBtn.titleColor(for: .normal), for: .highlighted)
+		
+		shareBtn.addTarget(self, action: #selector(onShareBtnClick), for: .touchUpInside)
+	}
+	
+	@objc func onBackBtnClick() {
 		navigationController?.popViewController(animated: true)
 	}
 	
 	@objc func onCameraIconClick() {
 		ImagePickerHelper.showMenu(from: self)
+	}
+	
+	@objc func onShareBtnClick() {
+		shareBtn.isHidden = true
+		cameraImg.isHidden = true
+		
+		let renderer = UIGraphicsImageRenderer(bounds: view.bounds)
+		let image = renderer.image { rendererContext in
+			view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+		}
+
+		let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+		present(activityViewController, animated: true) {
+			self.shareBtn.isHidden = false
+			self.cameraImg.isHidden = false
+			self.backImg.isHidden = false
+		}
 	}
 	
 	func setMonthImg(_ month: Int) {
